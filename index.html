@@ -39,6 +39,16 @@ body{background:#05060f;color:var(--cream);font-family:'Instrument Serif',Georgi
 #intro p{font:400 12px 'JetBrains Mono',monospace;letter-spacing:.3em;text-transform:uppercase;color:rgba(242,232,208,.7);animation:pl 2.2s ease-in-out infinite}
 #intro span{display:block;width:1px;height:46px;background:linear-gradient(var(--yel),transparent);margin:14px auto 0}
 @keyframes pl{50%{opacity:.25}}
+/* scroller: native bar hidden, replaced by a lighting-rig rail */
+html{scrollbar-width:none}html::-webkit-scrollbar{width:0;height:0;display:none}
+#rail{position:fixed;right:14px;top:12vh;bottom:12vh;width:24px;z-index:5;cursor:pointer;touch-action:none}
+#rail .trk{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(242,232,208,.18);transform:translateX(-50%)}
+#rail .beam{position:absolute;left:50%;top:0;width:1px;height:0;background:linear-gradient(rgba(255,199,31,.15),var(--yel));box-shadow:0 0 8px rgba(255,199,31,.55);transform:translateX(-50%)}
+#rail .tk{position:absolute;left:50%;width:7px;height:1px;background:rgba(242,232,208,.4);transform:translate(-50%,-50%);transition:background .4s,width .4s}
+#rail .tk.on{background:var(--yel);width:11px}
+#rail .knob{position:absolute;left:50%;top:0;width:9px;height:9px;border-radius:50%;background:var(--yel);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,199,31,.16),0 0 16px 4px rgba(255,199,31,.6);transition:width .2s,height .2s}
+#rail:hover .knob,#rail.drag .knob{width:13px;height:13px}
+#rail .num{position:absolute;right:20px;top:0;transform:translateY(-50%);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--yel);opacity:.85;white-space:nowrap;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.grain{animation:none;opacity:.08}}
 </style>
 </head>
@@ -51,6 +61,7 @@ body{background:#05060f;color:var(--cream);font-family:'Instrument Serif',Georgi
 <div class="hud" id="ward">Wardrobe —</div>
 <div class="hud" id="cue">Cue 00 — House dark</div>
 <div class="hud" id="bulbs" aria-label="Acts"></div>
+<div id="rail" role="scrollbar" aria-orientation="vertical" aria-label="Film progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="trk"></div><div class="beam"></div><div class="knob"></div><div class="num">00</div></div>
 <div id="intro"><p>Scroll to turn on the first light</p><span></span></div>
 
 <script>
@@ -768,6 +779,14 @@ function sched() {
 }
 document.getElementById('snd').onclick = e => { if (!AC) audioStart(); soundOn = !soundOn; if (AC.state === 'suspended') AC.resume(); e.target.textContent = soundOn ? 'Sound on' : 'Sound off'; e.target.setAttribute('aria-pressed', soundOn); };
 
+/* ---------- scroller rail ---------- */
+const railEl = document.getElementById('rail'), railBeam = railEl.querySelector('.beam'), railKnob = railEl.querySelector('.knob'), railNum = railEl.querySelector('.num'), railTicks = [];
+for (let i = 0; i < ACTS; i++) { const k = document.createElement('i'); k.className = 'tk'; k.style.top = (i / ACTS * 100) + '%'; railEl.insertBefore(k, railKnob); railTicks.push(k); }
+function railSeek(e) { const r = railEl.getBoundingClientRect(); scrollTo(0, cl((e.clientY - r.top) / r.height) * (document.documentElement.scrollHeight - innerHeight)); }
+railEl.addEventListener('pointerdown', e => { railEl.setPointerCapture(e.pointerId); railEl.classList.add('drag'); railSeek(e); });
+railEl.addEventListener('pointermove', e => { if (railEl.classList.contains('drag')) railSeek(e); });
+railEl.addEventListener('pointerup', () => railEl.classList.remove('drag')); railEl.addEventListener('pointercancel', () => railEl.classList.remove('drag'));
+
 /* ---------- main loop ---------- */
 let ps = 0, last = performance.now(), lastAct = -1;
 function frame(now) {
@@ -793,6 +812,9 @@ function frame(now) {
   const outW = act < ACTS - 1 ? sm(.84, 1, t) : 0, inW = act > 0 ? 1 - sm(0, .1, t) : 0; lightCut(Math.max(Math.pow(outW, 2.2), Math.pow(inW, 1.8)) * .95);
   for (const L of lineEls) { const on = L.ai === act ? sm(L.t0, L.t0 + .06, t) * (1 - sm(L.t1 - .06, L.t1, t)) : 0; L.e.style.opacity = on.toFixed(3); L.e.style.transform = L.e.classList.contains('cc') ? `translate(-50%,${(1 - on) * 14}px)` : `translateY(${(1 - on) * 14}px)`; }
   bulbDots.forEach((d, i) => d.classList.toggle('on', g > i + .12));
+  railBeam.style.height = (target * 100) + '%'; railKnob.style.top = railNum.style.top = (target * 100) + '%';
+  railTicks.forEach((k, i) => k.classList.toggle('on', target * ACTS >= i));
+  railNum.textContent = String(Math.min(ACTS, Math.floor(target * ACTS) + 1)).padStart(2, '0'); railEl.setAttribute('aria-valuenow', Math.round(target * 100));
   const cn = g > .1 ? Math.min(ACTS, act + 1) : 0; cueEl.textContent = `Cue ${String(cn).padStart(2, '0')} — ${CUES[cn]}`;
   introEl.style.opacity = ps > .004 ? 0 : 1;
   if (AC) { curAct = act; curLm = Lm; master.gain.setTargetAtTime(soundOn ? .32 * Lm : 0, AC.currentTime, .15); }
