@@ -37,7 +37,7 @@ body{background:#05060f;color:var(--cream);font-family:'Instrument Serif',Georgi
 .bl{left:6vw;bottom:15vh}.br{right:6vw;bottom:15vh;text-align:right}.tl{left:6vw;top:14vh}.tr{right:6vw;top:14vh;text-align:right}.cc{left:50%;top:13vh;transform:translateX(-50%);text-align:center}
 #intro{position:fixed;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:12vh;pointer-events:none;transition:opacity .8s}
 #intro p{font:400 12px 'JetBrains Mono',monospace;letter-spacing:.3em;text-transform:uppercase;color:rgba(242,232,208,.7);animation:pl 2.2s ease-in-out infinite}
-#intro span{display:block;width:1px;height:46px;background:linear-gradient(var(--yel),transparent);margin:14px auto 0}
+#hint>span{display:block;width:1px;height:46px;background:linear-gradient(var(--yel),transparent);margin:14px auto 0}
 @keyframes pl{50%{opacity:.25}}
 /* scroller: native bar hidden, replaced by a lighting-rig rail */
 html{scrollbar-width:none}html::-webkit-scrollbar{width:0;height:0;display:none}
@@ -49,7 +49,76 @@ html{scrollbar-width:none}html::-webkit-scrollbar{width:0;height:0;display:none}
 #rail .knob{position:absolute;left:50%;top:0;width:9px;height:9px;border-radius:50%;background:var(--yel);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,199,31,.16),0 0 16px 4px rgba(255,199,31,.6);transition:width .2s,height .2s}
 #rail:hover .knob,#rail.drag .knob{width:13px;height:13px}
 #rail .num{position:absolute;right:20px;top:0;transform:translateY(-50%);font:700 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--yel);opacity:.85;white-space:nowrap;pointer-events:none}
-@media (prefers-reduced-motion:reduce){.grain{animation:none;opacity:.08}}
+/* ---------- design layer: title card, slate, copy, controls ---------- */
+#intro{justify-content:space-between;padding:22vh 24px 12vh}
+#title{text-align:center;transition:transform 1.2s cubic-bezier(.2,.7,.2,1),filter 1.2s}
+#title h1{font:400 clamp(54px,11vw,168px)/.9 Anton,Impact,'Arial Narrow',sans-serif;letter-spacing:.06em;color:var(--cream);text-shadow:0 0 28px rgba(255,179,71,.35),0 0 90px rgba(255,199,31,.18)}
+#title h1 span{display:inline-block;opacity:.08;animation:lit .9s steps(1) forwards}
+@keyframes lit{0%{opacity:.08}18%{opacity:.9}26%{opacity:.15}40%{opacity:1;color:#fff6dc}100%{opacity:1}}
+#title em{display:block;margin-top:14px;font:italic 400 clamp(20px,2.4vw,32px)/1.2 'Instrument Serif',Georgia,serif;color:rgba(242,232,208,.82);opacity:0;animation:fin 1.4s 1.3s ease forwards}
+#title small{display:inline-flex;align-items:center;gap:14px;margin-top:22px;font:400 11px 'JetBrains Mono',monospace;letter-spacing:.32em;text-transform:uppercase;color:var(--yel);opacity:0;animation:fin 1.4s 1.7s ease forwards}
+#title small::before,#title small::after{content:'';width:34px;height:1px;background:currentColor;opacity:.6}
+@keyframes fin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#intro.gone #title{transform:scale(1.06);filter:blur(6px)}
+#hint{text-align:center}
+#hint i{display:block;width:20px;height:32px;margin:16px auto 0;border:1px solid rgba(242,232,208,.45);border-radius:12px;position:relative}
+#hint i::after{content:'';position:absolute;left:50%;top:7px;width:3px;height:6px;margin-left:-1.5px;border-radius:2px;background:var(--yel);box-shadow:0 0 8px var(--yel);animation:wh 1.8s ease-in-out infinite}
+@keyframes wh{0%{transform:translateY(0);opacity:1}70%{transform:translateY(10px);opacity:0}100%{opacity:0}}
+#hint>span{display:none}
+#slate{top:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;white-space:nowrap;opacity:0;transition:opacity .6s}
+#slate.on{opacity:1}
+#slate b{color:var(--yel);font-weight:700}
+#slate s{width:22px;height:1px;background:rgba(242,232,208,.45);text-decoration:none}
+#slate .nm{display:inline-block}
+#slate.flash .nm{animation:sl .9s ease}
+@keyframes sl{0%{opacity:0;letter-spacing:.42em;filter:blur(4px)}100%{opacity:1;letter-spacing:.14em;filter:none}}
+.line .w{display:inline-block;will-change:opacity,transform}
+.line.mono::before{content:'';display:block;width:30px;height:1px;background:currentColor;opacity:.65;margin-bottom:12px;box-shadow:0 0 8px currentColor}
+.line.mono.tr::before,.line.mono.br::before{margin-left:auto}.line.mono.cc::before{margin:0 auto 12px}
+.line.serif.cc{max-width:min(24ch,86vw)}
+#bulbs b{position:relative;padding:0;background:none;font:inherit;outline:none}
+#bulbs b::after{content:attr(data-name);position:absolute;bottom:22px;right:50%;transform:translate(50%,4px);padding:5px 9px;border:1px solid rgba(255,199,31,.35);border-radius:3px;background:rgba(5,6,15,.88);color:var(--cream);font:400 10px 'JetBrains Mono',monospace;letter-spacing:.16em;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#bulbs b:hover::after,#bulbs b:focus-visible::after{opacity:1;transform:translate(50%,0)}
+#bulbs b:hover{border-color:var(--yel)}
+#bulbs b:focus-visible,#snd:focus-visible{box-shadow:0 0 0 2px #05060f,0 0 0 3px var(--yel)}
+#bulbs b.cur{transform:scale(1.25)}
+#snd{display:flex;align-items:center;gap:9px}
+#snd .eq{display:inline-flex;align-items:flex-end;gap:2px;height:10px}
+#snd .eq i{width:2px;height:3px;background:currentColor;transition:height .3s}
+#snd[aria-pressed="true"]{border-color:rgba(255,199,31,.7);color:var(--yel)}
+#snd[aria-pressed="true"] .eq i{animation:eq .9s ease-in-out infinite}
+#snd .eq i:nth-child(2){animation-delay:-.3s}#snd .eq i:nth-child(3){animation-delay:-.6s}#snd .eq i:nth-child(4){animation-delay:-.15s}
+@keyframes eq{0%,100%{height:3px}50%{height:10px}}
+#rail .num em{font-style:normal;font-weight:400;color:var(--cream);margin-right:10px;opacity:0;transition:opacity .3s}
+#rail:hover .num em,#rail.drag .num em{opacity:.85}
+/* ---------- typography layer: act title card, decode lines, hot words, glints ---------- */
+#actcard{position:fixed;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;opacity:0;text-align:center}
+#actcard .ghost{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);width:min(62vh,80vw);height:min(62vh,80vw);border-radius:50%;border:1px solid rgba(255,199,31,.22);box-shadow:inset 0 0 80px rgba(255,179,71,.08);font-size:0}
+#actcard .ghost::before{content:'';position:absolute;inset:14px;border-radius:50%;border:1px dashed rgba(242,232,208,.14)}
+#actcard .kick{position:relative;display:inline-flex;align-items:center;gap:14px;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.34em;text-transform:uppercase;color:var(--yel);margin-bottom:18px}
+#actcard .kick::before,#actcard .kick::after{content:'';width:38px;height:1px;background:currentColor;box-shadow:0 0 8px currentColor}
+#actcard .big{position:relative;font:400 clamp(72px,15vw,230px)/.9 Anton,Impact,'Arial Narrow',sans-serif;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;filter:drop-shadow(0 0 22px rgba(255,179,71,.45))}
+#actcard .big span{display:inline-block;color:transparent;background:radial-gradient(circle,#fff3d6 0 1.25px,transparent 1.75px) 0 0/5px 5px,linear-gradient(rgba(255,199,31,.28),rgba(255,179,71,.12));-webkit-background-clip:text;background-clip:text}
+#actcard .big span.sp{width:.32em}
+#actcard .sub{position:relative;margin-top:14px;font:italic 400 clamp(18px,2vw,28px)/1.2 'Instrument Serif',Georgia,serif;color:rgba(242,232,208,.85)}
+.line.mono .sc{color:var(--cream);opacity:.55}
+.line.mono .caret{display:inline-block;width:.55em;height:1em;margin-left:.15em;vertical-align:-.15em;background:var(--yel);box-shadow:0 0 10px var(--yel);animation:cb .7s steps(1) infinite}
+@keyframes cb{50%{opacity:0}}
+.line .w{position:relative}
+.line .w.hot{color:#fff3d6;text-shadow:0 0 18px rgba(255,179,71,.55),0 2px 30px rgba(0,0,0,.8)}
+.line .w.hot::after{content:'';position:absolute;left:0;bottom:-.06em;height:6px;width:calc(var(--u,0) * 100%);background:radial-gradient(circle,var(--yel) 0 1.3px,transparent 1.9px) 0 50%/6px 6px repeat-x;filter:drop-shadow(0 0 4px rgba(255,199,31,.85))}
+.line .glint{display:inline-block;width:.62em;height:.62em;margin-left:.22em;vertical-align:.32em;opacity:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M10 0 L11.6 8.4 L20 10 L11.6 11.6 L10 20 L8.4 11.6 L0 10 L8.4 8.4 Z' fill='%23FFC71F'/></svg>") center/contain no-repeat;filter:drop-shadow(0 0 6px rgba(255,199,31,.9));animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{0%,100%{transform:scale(.7) rotate(0)}50%{transform:scale(1.15) rotate(45deg)}}
+@media (max-width:640px){
+  #brand{top:18px;left:18px}#ward{top:36px;left:18px;font-size:10px}#snd{top:12px;right:16px;padding:5px 10px}
+  #slate{top:56px;left:18px;transform:none;font-size:10px}
+  #cue{left:18px;bottom:44px;font-size:10px}#bulbs{left:18px;right:auto;bottom:18px}
+  #bulbs b::after{right:auto;left:0;transform:translateY(4px)}#bulbs b:hover::after,#bulbs b:focus-visible::after{transform:none}
+  #rail{right:6px}
+  .bl,.tl{left:18px}.br,.tr{right:40px}.bl,.br{bottom:17vh}.tl,.tr{top:17vh}
+  #intro{padding-top:26vh}
+}
+@media (prefers-reduced-motion:reduce){.grain{animation:none;opacity:.08}#title h1 span,#title em,#title small{animation:none;opacity:1}#hint i::after,#snd .eq i,.line .glint,.line.mono .caret{animation:none!important}#slate.flash .nm{animation:none}}
 </style>
 </head>
 <body>
@@ -57,12 +126,17 @@ html{scrollbar-width:none}html::-webkit-scrollbar{width:0;height:0;display:none}
 <canvas id="c"></canvas>
 <div class="fx halft"></div><div class="fx vig"></div><div class="bars t"></div><div class="bars b"></div><div class="fx grain"></div>
 <div class="hud" id="brand">Moonlight<i></i></div>
-<button class="hud" id="snd" aria-pressed="false">Sound off</button>
+<button class="hud" id="snd" aria-pressed="false"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="lb">Sound off</span></button>
+<div class="hud" id="slate" aria-live="polite"><b class="no">01</b><s></s><span class="nm">Jackson 5</span></div>
 <div class="hud" id="ward">Wardrobe —</div>
 <div class="hud" id="cue">Cue 00 — House dark</div>
 <div class="hud" id="bulbs" aria-label="Acts"></div>
 <div id="rail" role="scrollbar" aria-orientation="vertical" aria-label="Film progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="trk"></div><div class="beam"></div><div class="knob"></div><div class="num">00</div></div>
-<div id="intro"><p>Scroll to turn on the first light</p><span></span></div>
+<div id="actcard" aria-hidden="true"><div class="ghost">01</div><div class="kick">Act 01 · 1958</div><div class="big"></div><div class="sub"></div></div>
+<div id="intro">
+  <div id="title"><h1 aria-label="Moonlight"><span>M</span><span>O</span><span>O</span><span>N</span><span>L</span><span>I</span><span>G</span><span>H</span><span>T</span></h1><em>a life in light</em><small>Eight acts</small></div>
+  <div id="hint"><p>Scroll to turn on the first light</p><i></i><span></span></div>
+</div>
 
 <script>
 'use strict';
@@ -731,21 +805,65 @@ const SCENES = [A1, A2, A3, A4, A5, A6, A7, A8];
 
 /* ---------- copy ---------- */
 const COPY = [
-  [[.14, .42, 'mono', 'tl', 'Gary, Indiana — 1958'], [.34, .66, 'serif', 'bl', 'Five brothers. One bedroom. One light.'], [.68, .9, 'serif', 'br', 'The smallest one takes the front.']],
-  [[.1, .4, 'mono', 'tl', '1969 — Hitsville, Detroit'], [.36, .72, 'serif', 'bl', 'Four singles. Four number ones. 1970.'], [.74, .92, 'serif', 'br', 'A boy learning how to own a room.']],
-  [[.08, .34, 'mono', 'tl', '1979 — Off the Wall'], [.5, .84, 'serif', 'bl', 'A grown-up sound. His own. Twelve bulbs, then a spin.']],
-  [[.08, .3, 'mono', 'tl', '1982–83 — Thriller'], [.46, .8, 'serif', 'bl', 'A song became a short film. The dead learned the steps.']],
-  [[.12, .4, 'mono', 'tl', '1983 — Motown 25'], [.44, .82, 'serif', 'bl', 'One glove. One spotlight. Forward, by going back.']],
-  [[.1, .36, 'mono', 'tl', '1987 — Bad'], [.64, .9, 'serif', 'br', 'Five number ones from one record.']],
-  [[.08, .32, 'mono', 'tl', '1991 — Dangerous'], [.4, .7, 'serif', 'bl', 'Bigger stages. Bigger sound. Sixteen cans, then thirty-two.']],
-  [[.58, .78, 'mono', 'tl', 'Every light. At once.'], [.86, .99, 'serif', 'cc', 'The lights go down.\nThe dancing doesn’t.'], [.9, 1, 'mono', 'tr', '1958 — 2009']]
+  [[.17, .42, 'mono', 'tl', 'Gary, Indiana — 1958'], [.34, .66, 'serif', 'bl', 'Five brothers. One bedroom. *One light.*'], [.68, .9, 'serif', 'br', 'The smallest one takes *the front.*']],
+  [[.17, .4, 'mono', 'tl', '1969 — Hitsville, Detroit'], [.36, .72, 'serif', 'bl', 'Four singles. *Four number ones.* 1970.'], [.74, .92, 'serif', 'br', 'A boy learning how to *own a room.*']],
+  [[.17, .4, 'mono', 'tl', '1979 — Off the Wall'], [.5, .84, 'serif', 'bl', 'A grown-up sound. *His own.* Twelve bulbs, then a spin.']],
+  [[.17, .4, 'mono', 'tl', '1982–83 — Thriller'], [.46, .8, 'serif', 'bl', 'A song became a *short film.* The dead learned the steps.']],
+  [[.17, .42, 'mono', 'tl', '1983 — Motown 25'], [.44, .82, 'serif', 'bl', '*One glove.* One spotlight. Forward, by going back.']],
+  [[.17, .4, 'mono', 'tl', '1987 — Bad'], [.64, .9, 'serif', 'br', '*Five number ones* from one record.']],
+  [[.17, .38, 'mono', 'tl', '1991 — Dangerous'], [.4, .7, 'serif', 'bl', 'Bigger stages. Bigger sound. Sixteen cans, then *thirty-two.*']],
+  [[.58, .78, 'mono', 'tl', 'Every light. At once.'], [.86, .99, 'serif', 'cc', 'The lights go down.\nThe dancing *doesn’t.*'], [.9, 1, 'mono', 'tr', '1958 — 2009']]
 ];
+// act title cards: kicker year + a one-line subtitle
+const ACT_YEARS = ['1958', '1969', '1979', '1982', '1983', '1987', '1991', '2009'];
+const ACT_SUBS = ['five brothers, one light', 'the Motown years', 'a sound of his own', 'the short film', 'one glove, one step', 'the street and the stage', 'the world tour', 'every light at once'];
 const CUES = ['House dark', 'One bulb', 'Five lamps', 'Twelve bulbs', 'Moon & fog', 'Single spot', 'Tunnel lamps', 'Arena', 'All lights'];
+const ACT_NAMES = ['Jackson 5', 'Motown', 'Off the Wall', 'Thriller', 'The Moonwalk', 'Bad', 'Dangerous', 'The Legacy'];
 const lineEls = [];
-COPY.forEach((act, ai) => act.forEach(([t0, t1, cls, pos, txt]) => { const e = document.createElement('div'); e.className = `line ${cls} ${pos}`; e.textContent = txt; e.style.whiteSpace = 'pre-line'; document.body.appendChild(e); lineEls.push({ e, ai, t0, t1 }); }));
+COPY.forEach((act, ai) => act.forEach(([t0, t1, cls, pos, txt]) => {
+  const clean = txt.replace(/\*/g, ''), e = document.createElement('div'); e.className = `line ${cls} ${pos}`; e.style.whiteSpace = 'pre-line'; e.setAttribute('aria-label', clean);
+  const words = []; let hot = false, glint = null; // serif lines reveal word by word; *phrases* get the hot treatment
+  if (cls === 'serif') {
+    txt.split(/(\s+)/).forEach(tok => {
+      if (/^\s+$/.test(tok) || !tok) { e.appendChild(document.createTextNode(tok)); return; }
+      if (tok.startsWith('*')) { hot = true; tok = tok.slice(1); } const endHot = tok.endsWith('*'); if (endHot) tok = tok.slice(0, -1);
+      const s = document.createElement('span'); s.className = hot ? 'w hot' : 'w'; s.textContent = tok; s.setAttribute('aria-hidden', 'true'); e.appendChild(s); words.push(s); if (endHot) hot = false;
+    });
+    glint = document.createElement('i'); glint.className = 'glint'; glint.setAttribute('aria-hidden', 'true'); e.appendChild(glint);
+  } else e.textContent = clean;
+  document.body.appendChild(e); lineEls.push({ e, ai, t0, t1, words, glint, txt: clean, last: -1 });
+}));
 const bulbsEl = document.getElementById('bulbs'), bulbDots = [];
-for (let i = 0; i < ACTS; i++) { const d = document.createElement('b'); d.title = 'Act ' + (i + 1); d.onclick = () => scrollTo({ top: (i + .02) / ACTS * (document.documentElement.scrollHeight - innerHeight), behavior: 'smooth' }); bulbsEl.appendChild(d); bulbDots.push(d); }
+for (let i = 0; i < ACTS; i++) { const d = document.createElement('b'); d.setAttribute('role', 'button'); d.tabIndex = 0; d.dataset.name = String(i + 1).padStart(2, '0') + ' · ' + ACT_NAMES[i]; d.setAttribute('aria-label', 'Act ' + (i + 1) + ': ' + ACT_NAMES[i]); const go = () => scrollTo({ top: (i + .02) / ACTS * (document.documentElement.scrollHeight - innerHeight), behavior: REDUCED ? 'auto' : 'smooth' }); d.onclick = go; d.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }; bulbsEl.appendChild(d); bulbDots.push(d); }
 const wardEl = document.getElementById('ward'), cueEl = document.getElementById('cue'), introEl = document.getElementById('intro');
+const slateEl = document.getElementById('slate'), slateNo = slateEl.querySelector('.no'), slateNm = slateEl.querySelector('.nm');
+document.querySelectorAll('#title h1 span').forEach((s, i) => { s.style.animationDelay = (.25 + i * .09 + rnd(i) * .18).toFixed(2) + 's'; });
+function setSlate(a) { slateNo.textContent = String(a + 1).padStart(2, '0'); slateNm.textContent = ACT_NAMES[a]; slateEl.classList.remove('flash'); void slateEl.offsetWidth; slateEl.classList.add('flash'); bulbDots.forEach((d, i) => d.classList.toggle('cur', i === a)); }
+
+/* ---------- act title card ---------- */
+const cardEl = document.getElementById('actcard'), cardGhost = cardEl.querySelector('.ghost'), cardKick = cardEl.querySelector('.kick'), cardBig = cardEl.querySelector('.big'), cardSub = cardEl.querySelector('.sub');
+let cardLetters = [], cardAct = -1;
+function buildCard(a) {
+  cardAct = a; const no = String(a + 1).padStart(2, '0'); cardGhost.textContent = no; cardKick.textContent = `Act ${no} · ${ACT_NAMES[a]}`; cardSub.textContent = ACT_SUBS[a];
+  cardBig.textContent = ''; cardLetters = [];
+  [...ACT_YEARS[a]].forEach((ch, i) => { const s = document.createElement('span'); if (ch === ' ') s.className = 'sp'; else s.textContent = ch; cardBig.appendChild(s); if (ch !== ' ') cardLetters.push({ s, d: rnd(i * 3.7 + a) }); });
+}
+function drawCard(a, t) {
+  const win = a === 0 ? sm(.035, .06, t) : sm(0, .03, t), out = sm(.11, .16, t), on = win * (1 - out);
+  if (on <= .001) { if (cardEl.style.opacity !== '0') cardEl.style.opacity = 0; return; }
+  if (a !== cardAct) buildCard(a);
+  cardEl.style.opacity = 1; const n = cardLetters.length, inK = a === 0 ? sm(.035, .1, t) : sm(0, .08, t);
+  cardLetters.forEach((L, j) => { // marquee: each letter flickers on in a loose order
+    const k = cl(inK * 1.7 - (j / n) * .5 - L.d * .2); let o = k;
+    if (!REDUCED && k > 0 && k < 1) o = k * (Math.sin(T * 48 + j * 9) > -.2 ? 1 : .2);
+    L.s.style.opacity = (o * (1 - out)).toFixed(3);
+  });
+  cardBig.style.letterSpacing = (.05 + out * .35).toFixed(3) + 'em'; cardBig.style.filter = `drop-shadow(0 0 22px rgba(255,179,71,.45)) blur(${(out * 8).toFixed(2)}px)`;
+  cardGhost.style.opacity = (on * .9).toFixed(3); cardGhost.style.transform = `translate(-50%,-52%) scale(${(1.12 - inK * .12 + out * .1).toFixed(3)})`;
+  cardKick.style.opacity = cl(inK * 2 - .3) * (1 - out); cardSub.style.opacity = cl(inK * 2 - 1) * (1 - out);
+}
+const GLYPHS = '#/—+×*0123456789·';
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 /* ---------- sound: original generative score + transition whoosh ---------- */
 let AC = null, master = null, soundOn = false, curAct = 0, curLm = 0, step = 0, nextT = 0, pad = null, noiseBuf = null;
@@ -777,10 +895,11 @@ function sched() {
   }
   pad.o.forEach((o, i) => o.frequency.setTargetAtTime(ROOT[curAct] * [1, 1.2, 1.5][i], AC.currentTime, .4)); pad.f.frequency.setTargetAtTime(300 + curAct * 220, AC.currentTime, .5);
 }
-document.getElementById('snd').onclick = e => { if (!AC) audioStart(); soundOn = !soundOn; if (AC.state === 'suspended') AC.resume(); e.target.textContent = soundOn ? 'Sound on' : 'Sound off'; e.target.setAttribute('aria-pressed', soundOn); };
+document.getElementById('snd').onclick = e => { const btn = e.currentTarget; if (!AC) audioStart(); soundOn = !soundOn; if (AC.state === 'suspended') AC.resume(); btn.querySelector('.lb').textContent = soundOn ? 'Sound on' : 'Sound off'; btn.setAttribute('aria-pressed', soundOn); };
 
 /* ---------- scroller rail ---------- */
 const railEl = document.getElementById('rail'), railBeam = railEl.querySelector('.beam'), railKnob = railEl.querySelector('.knob'), railNum = railEl.querySelector('.num'), railTicks = [];
+railNum.innerHTML = '<em></em><span>00</span>'; const railName = railNum.querySelector('em'), railDigits = railNum.querySelector('span');
 for (let i = 0; i < ACTS; i++) { const k = document.createElement('i'); k.className = 'tk'; k.style.top = (i / ACTS * 100) + '%'; railEl.insertBefore(k, railKnob); railTicks.push(k); }
 function railSeek(e) { const r = railEl.getBoundingClientRect(); scrollTo(0, cl((e.clientY - r.top) / r.height) * (document.documentElement.scrollHeight - innerHeight)); }
 railEl.addEventListener('pointerdown', e => { railEl.setPointerCapture(e.pointerId); railEl.classList.add('drag'); railSeek(e); });
@@ -796,7 +915,7 @@ function frame(now) {
   const g = ps * ACTS, act = Math.min(ACTS - 1, Math.floor(g)), t = Math.min(1, g - act); CURACT = act; CURT = t;
   const b = (soundOn && AC ? AC.currentTime : T) * 2;
   const Lm = (act === 0 ? 1 : sm(0, .07, t)) * (act === ACTS - 1 ? 1 : 1 - sm(.93, 1, t));
-  if (act !== lastAct) { if (lastAct >= 0) whoosh(); lastAct = act; }
+  if (act !== lastAct) { if (lastAct >= 0) whoosh(); lastAct = act; setSlate(act); }
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
   lights = []; cones = []; glows = []; chars = [];
   const R = SCENES[act](t, b), pulse = Math.pow(Math.max(0, cB(b)), 3);
@@ -810,13 +929,28 @@ function frame(now) {
   for (const [x, y] of gl) { const k = Math.max(0, Math.sin(T * 5 + x)); sparkle(x, y, H * .035 * (.5 + k) * (1 + sm(.84, 1, t) * (act === 4 ? 2 : 0)), .35 + .65 * k); }
   bloom(.55 + .25 * pulse);
   const outW = act < ACTS - 1 ? sm(.84, 1, t) : 0, inW = act > 0 ? 1 - sm(0, .1, t) : 0; lightCut(Math.max(Math.pow(outW, 2.2), Math.pow(inW, 1.8)) * .95);
-  for (const L of lineEls) { const on = L.ai === act ? sm(L.t0, L.t0 + .06, t) * (1 - sm(L.t1 - .06, L.t1, t)) : 0; L.e.style.opacity = on.toFixed(3); L.e.style.transform = L.e.classList.contains('cc') ? `translate(-50%,${(1 - on) * 14}px)` : `translateY(${(1 - on) * 14}px)`; }
+  for (const L of lineEls) {
+    const on = L.ai === act ? sm(L.t0, L.t0 + .06, t) * (1 - sm(L.t1 - .06, L.t1, t)) : 0, q = Math.round(on * 400) / 400; if (q === L.last) continue; L.last = q;
+    L.e.style.transform = L.e.classList.contains('cc') ? `translate(-50%,${(1 - on) * 14}px)` : `translateY(${(1 - on) * 14}px)`;
+    if (L.words.length) { // same window, words light up one after another
+      L.e.style.opacity = on > .001 ? 1 : 0; const n = L.words.length;
+      L.words.forEach((w, j) => { const raw = on * 1.6 - j / n * .6, k = cl(raw); w.style.opacity = k.toFixed(3); w.style.transform = `translateY(${((1 - k) * .35).toFixed(3)}em)`; w.style.filter = k < 1 ? `blur(${((1 - k) * 6).toFixed(2)}px)` : 'none'; if (w.classList.contains('hot')) w.style.setProperty('--u', cl((raw - .8) / .2).toFixed(3)); });
+      if (L.glint) L.glint.style.opacity = cl((on - .9) / .1).toFixed(3);
+    } else { // cue-board decode: characters type in, a few scrambled glyphs run ahead of a caret
+      L.e.style.opacity = cl(on * 3).toFixed(3);
+      if (REDUCED) { if (L.e.textContent !== L.txt) L.e.textContent = L.txt; continue; }
+      const len = L.txt.length, r = Math.floor(cl(on * 1.35) * len);
+      const tail = L.txt.slice(r, Math.min(len, r + 3)).replace(/\S/g, () => GLYPHS[Math.random() * GLYPHS.length | 0]);
+      L.e.innerHTML = esc(L.txt.slice(0, r)) + (tail ? `<span class="sc">${esc(tail)}</span>` : '') + (r < len ? '<i class="caret"></i>' : '');
+    }
+  }
+  drawCard(act, t);
   bulbDots.forEach((d, i) => d.classList.toggle('on', g > i + .12));
   railBeam.style.height = (target * 100) + '%'; railKnob.style.top = railNum.style.top = (target * 100) + '%';
   railTicks.forEach((k, i) => k.classList.toggle('on', target * ACTS >= i));
-  railNum.textContent = String(Math.min(ACTS, Math.floor(target * ACTS) + 1)).padStart(2, '0'); railEl.setAttribute('aria-valuenow', Math.round(target * 100));
+  const ra = Math.min(ACTS, Math.floor(target * ACTS) + 1); railDigits.textContent = String(ra).padStart(2, '0'); railName.textContent = ACT_NAMES[ra - 1]; railEl.setAttribute('aria-valuenow', Math.round(target * 100));
   const cn = g > .1 ? Math.min(ACTS, act + 1) : 0; cueEl.textContent = `Cue ${String(cn).padStart(2, '0')} — ${CUES[cn]}`;
-  introEl.style.opacity = ps > .004 ? 0 : 1;
+  const introOn = ps <= .004; introEl.style.opacity = introOn ? 1 : 0; introEl.classList.toggle('gone', !introOn); slateEl.classList.toggle('on', !introOn);
   if (AC) { curAct = act; curLm = Lm; master.gain.setTargetAtTime(soundOn ? .32 * Lm : 0, AC.currentTime, .15); }
   requestAnimationFrame(frame);
 }
